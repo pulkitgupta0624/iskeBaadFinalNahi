@@ -32,7 +32,14 @@ import imageM2 from "../../assets//Front/mercuryplanter.jpg";
 
 // Updated product images object with matching keys
 const productImages = {
-  "mercury-planter-planter": [imageM1, image11, image12, image13, image14, image15],
+  "mercury-planter-planter": [
+    imageM1,
+    image11,
+    image12,
+    image13,
+    image14,
+    image15,
+  ],
   "mercury-cone-vase": [imageM2, image21, image22, image23, image24, image25],
 };
 
@@ -86,7 +93,7 @@ const PlantersAndVasesDesc = () => {
   const [error, setError] = useState("");
 
   const [showPopup, setShowPopup] = useState(false); // State to manage the popup visibility
-  const [popupMessage, setPopupMessage] = useState(""); 
+  const [popupMessage, setPopupMessage] = useState("");
 
   useEffect(() => {
     AOS.init({
@@ -234,7 +241,7 @@ const PlantersAndVasesDesc = () => {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
       // Redirect to /auth if not logged in
-      navigate("/auth", { state: { redirectTo: "/select-address" } });
+      navigate("/auth", { state: { redirectTo: location.pathname } });
       return;
     }
 
