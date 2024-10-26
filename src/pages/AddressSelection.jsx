@@ -7,7 +7,6 @@ import { Check, CreditCard, Truck, Plus, Trash2 } from "lucide-react";
 import OrderConfirmationModal from "./BuyNowmodal";
 import Footer from "../components/Footer/Footer";
 import Navbar from "../components/Navbar/Navbar";
-
 const AddressSelection = () => {
   const userInfo = useSelector((state) => state.auth.userInfo);
   const navigate = useNavigate();
@@ -30,6 +29,7 @@ const AddressSelection = () => {
   });
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [orderDetails, setOrderDetails] = useState(null);
 
   useEffect(() => {
     loadRazorpayScript();
@@ -262,9 +262,28 @@ const AddressSelection = () => {
 
         const savedOrderData = await orderResponse.json();
         localStorage.setItem("orderDetails", JSON.stringify(savedOrderData));
-
+        setOrderDetails(savedOrderData);
         toast.success("Order placed successfully!");
         setIsModalOpen(true);
+
+        // Send confirmation email for COD
+        await fetch(
+          "https://qdore-backend-final-final-last.vercel.app/api/send-email/confirmationemail",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: userInfo.email,
+              username: userInfo.username,
+              address: `${addressLine1}, ${city}, ${state}, ${pincode}`,
+              amount: newOrderData.amount,
+              paymentMethod: "Cash on Delivery",
+            }),
+          }
+        );
+
         setTimeout(() => {
           navigate("/");
         }, 3000);
@@ -312,9 +331,28 @@ const AddressSelection = () => {
                 "orderDetails",
                 JSON.stringify(savedOrderData)
               );
-
+              setOrderDetails(savedOrderData);
               toast.success("Order placed successfully!");
               setIsModalOpen(true);
+
+              // Send confirmation email for online payment
+              await fetch(
+                "https://qdore-backend-final-final-last.vercel.app/api/send-email/confirmationemail",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    email: userInfo.email,
+                    username: userInfo.username,
+                    address: `${addressLine1}, ${city}, ${state}, ${pincode}`,
+                    amount: newOrderData.amount,
+                    paymentMethod: "Online Payment",
+                  }),
+                }
+              );
+
               setTimeout(() => {
                 navigate("/");
               }, 3000);
@@ -374,7 +412,10 @@ const AddressSelection = () => {
                         <div className="flex items-start">
                           <input
                             type="checkbox"
-                            checked={selectedAddress && selectedAddress._id === address._id}
+                            checked={
+                              selectedAddress &&
+                              selectedAddress._id === address._id
+                            }
                             onChange={() => setSelectedAddress(address)}
                             className="mr-3 h-12 w-5 text-black border-gray-300 rounded focus:ring-black"
                           />
@@ -393,9 +434,10 @@ const AddressSelection = () => {
                           </div>
                         </div>
                         <div className="flex items-center">
-                          {selectedAddress && selectedAddress._id === address._id && (
-                            <Check className="text-black w-6 h-6 mr-2" />
-                          )}
+                          {selectedAddress &&
+                            selectedAddress._id === address._id && (
+                              <Check className="text-black w-6 h-6 mr-2" />
+                            )}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -557,12 +599,12 @@ const AddressSelection = () => {
         <OrderConfirmationModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
+          orderDetails={orderDetails}
         />
       </div>
       <Footer />
     </>
   );
-  
 };
 
 export default AddressSelection;
