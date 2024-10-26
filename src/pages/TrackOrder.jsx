@@ -11,17 +11,22 @@ const TrackOrderPage = () => {
   const [trackingInfo, setTrackingInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const userInfo = useSelector((state) => state.auth.userInfo);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   useEffect(() => {
     const fetchTrackingInfo = async () => {
+      if (!userInfo || !userInfo.token) {
+        setError("User is not authenticated.");
+        setLoading(false);
+        return;
+      }
       try {
         const token = userInfo.token;
         const { data } = await axios.get(
           `https://qdore-backend-final-final-last.vercel.app/api/orders/${orderId}/track`,
           {
             headers: {
-              Authorization: Bearer `${token}`,
+              Authorization: `Bearer ${token}`, // Corrected syntax
             },
           }
         );
