@@ -33,10 +33,10 @@ import image32 from "../../assets/Lifestyle/Wooden/Wavy/wavy2.jpeg";
 import image33 from "../../assets/Lifestyle/Wooden/Wavy/wavy3.jpg";
 import image34 from "../../assets/wooden/wc33.png";
 
-import imageW3 from '../../assets/Front/acaciabowl4.jpg';
-import imageW4 from '../../assets/Front/acaciabowl1.jpg';
-import imageW5 from '../../assets/Front/acaciabowl2.jpg';
-import imageW6 from '../../assets/Front/acaciabowl3.jpg';
+import imageW3 from "../../assets/Front/acaciabowl4.jpg";
+import imageW4 from "../../assets/Front/acaciabowl1.jpg";
+import imageW5 from "../../assets/Front/acaciabowl2.jpg";
+import imageW6 from "../../assets/Front/acaciabowl3.jpg";
 
 import s1 from "../../assets/Front/bowl1.jpeg";
 import s2 from "../../assets/Front/chopping.jpeg";
@@ -69,7 +69,13 @@ const productImages = {
     image43,
     image44,
   ],
-  "acacia-wood-bowl-and-serve-set": [imageW5, image51, image52, image53, image54],
+  "acacia-wood-bowl-and-serve-set": [
+    imageW5,
+    image51,
+    image52,
+    image53,
+    image54,
+  ],
   "acacia-wood-bowl-ii": [imageW6, image61, image62, image63, image64],
 };
 
@@ -285,7 +291,7 @@ const ServewaresDesc = () => {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
       // Redirect to /auth if not logged in
-      navigate("/auth", { state: { redirectTo: "/select-address" } });
+      navigate("/auth", { state: { redirectTo: location.pathname } });
       return;
     }
 
