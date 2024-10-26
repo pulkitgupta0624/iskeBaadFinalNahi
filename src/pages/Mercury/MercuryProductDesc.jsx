@@ -45,7 +45,7 @@ const products = [
     ],
     price: 5000,
     material: "Aluminium Sheet",
-    dimensions: "10x10x13.75 Inch"
+    dimensions: "10x10x13.75 Inch",
   },
   {
     id: "mercury-cone",
@@ -59,7 +59,7 @@ const products = [
     ],
     price: 3200,
     material: "Aluminium Sheet",
-    dimensions: "6.5x6.5x15 Inch"
+    dimensions: "6.5x6.5x15 Inch",
   },
 ];
 
@@ -82,7 +82,7 @@ const MercuryProductDesc = () => {
   const [error, setError] = useState("");
 
   const [showPopup, setShowPopup] = useState(false); // State to manage the popup visibility
-  const [popupMessage, setPopupMessage] = useState(""); 
+  const [popupMessage, setPopupMessage] = useState("");
 
   useEffect(() => {
     AOS.init({
@@ -217,7 +217,6 @@ const MercuryProductDesc = () => {
     }
   };
 
-
   const handleBuyNow = () => {
     if (!userInfo) {
       // Save current product to localStorage before redirecting
@@ -232,7 +231,7 @@ const MercuryProductDesc = () => {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
       // Redirect to /auth if not logged in
-      navigate("/auth", { state: { redirectTo: "/select-address" } });
+      navigate("/auth", { state: { redirectTo: location.pathname } });
       return;
     }
 
@@ -316,7 +315,7 @@ const MercuryProductDesc = () => {
             </ul>
 
             <h2 className="text-4xl font-semibold my-4">
-            ₹{activeProduct.price.toFixed(2)}
+              ₹{activeProduct.price.toFixed(2)}
             </h2>
 
             <div className="flex items-center gap-6">
@@ -453,6 +452,5 @@ const IconFeature = ({ icon, text }) => (
     <span className="text-sm text-gray-700">{text}</span>
   </div>
 );
-
 
 export default MercuryProductDesc;
