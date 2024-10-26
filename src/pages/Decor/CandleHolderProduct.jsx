@@ -19,7 +19,7 @@ import { productImages, products } from "./candleProductdata.js";
 const CandleHolderProduct = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const userInfo = useSelector((state) => state.auth.userInfo);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const [activeProduct, setActiveProduct] = useState(
     () => products.find((product) => product.id === productId) || products[0]
@@ -183,7 +183,7 @@ const CandleHolderProduct = () => {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
       // Redirect to /auth if not logged in
-      navigate("/auth", { state: { redirectTo: "/select-address" } });
+      navigate("/auth", { state: { redirectTo: location.pathname } });
       return;
     }
 
