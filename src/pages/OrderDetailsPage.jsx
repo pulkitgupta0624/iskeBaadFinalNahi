@@ -223,7 +223,7 @@ const OrderDetailPage = () => {
         buttons.push(
           <button
             key="track"
-            onClick={() => navigate(/track-order/`${orderId}`)}
+            onClick={() => navigate(`/track-order/${orderId}`)}
             className="flex items-center px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-300 font-sans"
           >
             <Truck className="mr-2" /> Track Order
@@ -363,7 +363,11 @@ const OrderDetailPage = () => {
                       key={product._id}
                       className="flex items-center bg-gray-50 p-4 rounded-lg"
                     >
-                      
+                      <img
+                        src={`https://ipfs.io/ipfs/${product.image}`}
+                        alt={product.name}
+                        className="w-20 h-20 object-cover rounded-md mr-4"
+                      />
                       <div>
                         <h3 className="font-semibold font-serif">
                           {product.name}
@@ -372,7 +376,7 @@ const OrderDetailPage = () => {
                           Quantity: {product.quantity}
                         </p>
                         <p className="text-sm font-semibold font-sans">
-                        ₹{product.price.toFixed(2)}
+                          ₹{product.price.toFixed(2)}
                         </p>
                       </div>
                     </div>
