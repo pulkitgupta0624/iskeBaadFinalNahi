@@ -183,7 +183,7 @@ const SideTableProducts = () => {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
       // Redirect to /auth if not logged in
-      navigate("/auth", { state: { redirectTo: "/select-address" } });
+      navigate("/auth", { state: { redirectTo: location.pathname } });
       return;
     }
 
