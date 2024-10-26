@@ -38,12 +38,12 @@ import image13 from "../../assets/Lifestyle/Wooden/Candle/candle3.jpeg";
 import image14 from "../../assets/Lifestyle/Wooden/Candle/candle4.jpg";
 import image15 from "../../assets/CandleHolders/ch555.png";
 
-import imageW1 from '../../assets/Front/acaciacandle.jpg';
-import imageW2 from '../../assets/Front/acaciaside.jpg';
-import imageW3 from '../../assets/Front/acaciabowl4.jpg';
-import imageW4 from '../../assets/Front/acaciabowl1.jpg';
-import imageW5 from '../../assets/Front/acaciabowl2.jpg';
-import imageW6 from '../../assets/Front/acaciabowl3.jpg';
+import imageW1 from "../../assets/Front/acaciacandle.jpg";
+import imageW2 from "../../assets/Front/acaciaside.jpg";
+import imageW3 from "../../assets/Front/acaciabowl4.jpg";
+import imageW4 from "../../assets/Front/acaciabowl1.jpg";
+import imageW5 from "../../assets/Front/acaciabowl2.jpg";
+import imageW6 from "../../assets/Front/acaciabowl3.jpg";
 
 // import image22 from '../../assets/wooden/wc22.png';
 // import image33 from '../../assets/wooden/wc33.png';
@@ -60,7 +60,14 @@ import {
 } from "react-icons/fa";
 // Product images
 const productImages = {
-  "acacia-wood-candle-holder": [imageW1, image11, image12, image13, image14, image15],
+  "acacia-wood-candle-holder": [
+    imageW1,
+    image11,
+    image12,
+    image13,
+    image14,
+    image15,
+  ],
   "acacia-wood-side-table": [imageW2, image21, image22, image23, image24],
   "acacia-wood-bowl-i": [imageW3, image31, image32, image33, image34],
   "acacia-circular-wood-bowl-and-spoon-set": [
@@ -70,7 +77,13 @@ const productImages = {
     image43,
     image44,
   ],
-  "acacia-wood-bowl-and-serve-set": [imageW5, image51, image52, image53, image54],
+  "acacia-wood-bowl-and-serve-set": [
+    imageW5,
+    image51,
+    image52,
+    image53,
+    image54,
+  ],
   "acacia-wood-bowl-ii": [imageW6, image61, image62, image63, image64],
 };
 
@@ -86,7 +99,7 @@ const products = [
     ],
     price: 3200, // Changed to number
     material: "Acacia Wood",
-    dimensions: "14x14x22 Inch"
+    dimensions: "14x14x22 Inch",
   },
   {
     id: "acacia-wood-side-table",
@@ -98,7 +111,7 @@ const products = [
     ],
     price: 9500, // Changed to number
     material: "Acacia Wood",
-    dimensions: "14x14x22 Inch"
+    dimensions: "14x14x22 Inch",
   },
   {
     id: "acacia-wood-bowl-i",
@@ -111,7 +124,7 @@ const products = [
     ],
     price: 1400, // Changed to number
     material: "Acacia Wood",
-    dimensions: "14x14x22 Inch"
+    dimensions: "14x14x22 Inch",
   },
   {
     id: "acacia-circular-wood-bowl-and-spoon-set",
@@ -123,7 +136,7 @@ const products = [
     ],
     price: 550, // Changed to number
     material: "Acacia Wood",
-    dimensions: "14x14x22 Inch"
+    dimensions: "14x14x22 Inch",
   },
   {
     id: "acacia-wood-bowl-and-serve-set",
@@ -135,7 +148,7 @@ const products = [
     ],
     price: 2300, // Changed to number
     material: "Acacia Wood",
-    dimensions: "14x14x22 Inch"
+    dimensions: "14x14x22 Inch",
   },
   {
     id: "acacia-wood-bowl-ii",
@@ -148,7 +161,7 @@ const products = [
     ],
     price: 1400, // Changed to number
     material: "Acacia Wood",
-    dimensions: "14x14x22 Inch"
+    dimensions: "14x14x22 Inch",
   },
 ];
 
@@ -320,7 +333,7 @@ const WoodenProductDesc = () => {
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
       // Redirect to /auth if not logged in
-      navigate("/auth", { state: { redirectTo: "/select-address" } });
+      navigate("/auth", { state: { redirectTo: location.pathname } });
       return;
     }
 
@@ -541,6 +554,5 @@ const IconFeature = ({ icon, text }) => (
     <span className="text-sm text-gray-700">{text}</span>
   </div>
 );
-
 
 export default WoodenProductDesc;
