@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import Navbar from "../components/Navbar/Navbar.jsx";
 import Footer from "../components/Footer/Footer.jsx";
 import { FaCreditCard, FaMoneyBillWave, FaSpinner } from "react-icons/fa";
+import OrderConfirmationModal from "./BuyNowmodal";
 const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,6 +16,8 @@ const Checkout = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("online");
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const selectedAddress = location.state?.selectedAddress;
 
   useEffect(() => {
@@ -39,9 +42,9 @@ const Checkout = () => {
       setError("User info or fbUserId is missing");
       return null;
     }
-  
+
     console.log("Fetching user data for fbUserId:", userInfo.fbUserId);
-  
+
     try {
       const response = await fetch(
         `https://qdore-backend-final-final-last.vercel.app/api/users/objectIdexport?fbUserId=${userInfo.fbUserId}`,
@@ -53,17 +56,17 @@ const Checkout = () => {
           },
         }
       );
-  
+
       // Log the status code to debug potential API issues
       console.log("API Response Status:", response.status);
-  
+
       if (!response.ok) {
         const errorMsg = `Failed to fetch user data: ${response.status} ${response.statusText}`;
         console.error(errorMsg);
         setError(errorMsg);
         return null;
       }
-  
+
       const data = await response.json();
       console.log("User data fetched successfully:", data);
       return data;
@@ -73,7 +76,6 @@ const Checkout = () => {
       return null;
     }
   };
-  
 
   const fetchCart = async () => {
     const userData = await fetchUserData();
@@ -142,7 +144,6 @@ const Checkout = () => {
       toast.error("Failed to clear cart. Please try again.");
     }
   };
-
   const handleOrder = async () => {
     setIsProcessingPayment(true);
     setError(null);
@@ -155,6 +156,35 @@ const Checkout = () => {
     }
 
     const mongoUserId = userData._id;
+
+    // Helper function to send confirmation email
+    const sendConfirmationEmail = async (orderData, paymentMethod) => {
+      try {
+        const response = await fetch(
+          "https://qdore-backend-final-final-last.vercel.app/api/send-email/confirmationemail",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: userInfo.email,
+              username: userInfo.username,
+              address: `${selectedAddress.line1}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.postalCode}`,
+              amount: orderData.amount,
+              paymentMethod: paymentMethod,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to send confirmation email");
+        }
+      } catch (error) {
+        console.error("Error sending confirmation email:", error);
+        // Don't throw error here, just log it since email sending is not critical
+      }
+    };
 
     if (paymentMethod === "cod") {
       try {
@@ -185,7 +215,12 @@ const Checkout = () => {
 
         const orderData = await orderResponse.json();
         localStorage.setItem("orderDetails", JSON.stringify(orderData));
+        setOrderDetails(orderData);
 
+        // Send confirmation email for COD
+        await sendConfirmationEmail(orderData, "Cash on Delivery");
+
+        setIsModalOpen(true);
         await clearCart(mongoUserId);
 
         setSuccessMessage(true);
@@ -200,6 +235,7 @@ const Checkout = () => {
       }
       return;
     }
+
     // Online Payment Flow using Razorpay
     try {
       const options = {
@@ -238,7 +274,13 @@ const Checkout = () => {
 
             const orderData = await orderResponse.json();
             localStorage.setItem("orderDetails", JSON.stringify(orderData));
+            setOrderDetails(orderData);
 
+            // Send confirmation email for online payment
+            await sendConfirmationEmail(orderData, "Online Payment");
+
+            setIsModalOpen(true);
+            await clearCart(mongoUserId);
             setSuccessMessage(true);
             setTimeout(() => {
               navigate("/");
@@ -298,20 +340,6 @@ const Checkout = () => {
     <div className="min-h-screen bg-gray-100">
       <Navbar />
       <div className="container mx-auto px-4 py-10">
-        {successMessage && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 animate-fade-in">
-            <h2 className="text-2xl font-bold">
-              Thank you for shopping with us!
-            </h2>
-            <p>Your order has been successfully placed.</p>
-          </div>
-        )}
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-            <strong className="font-bold">Error: </strong>
-            <span className="block sm:inline">{error}</span>
-          </div>
-        )}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Products Summary */}
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -336,11 +364,11 @@ const Checkout = () => {
                         {item.name}
                       </h3>
                       <p className="text-gray-600">
-                      ₹{item.price.toFixed(2)} x {item.quantity}
+                        ₹{item.price.toFixed(2)} x {item.quantity}
                       </p>
                     </div>
                     <p className="text-gray-800 font-semibold">
-                    ₹{(item.price * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 );
@@ -354,7 +382,7 @@ const Checkout = () => {
                   Total
                 </span>
                 <span className="text-2xl font-bold text-gray-800">
-                ₹{totalPrice.toFixed(2)}
+                  ₹{totalPrice.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -436,6 +464,11 @@ const Checkout = () => {
             </div>
           </div>
         </div>
+        <OrderConfirmationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          orderDetails={orderDetails}
+        />
       </div>
       <Footer />
     </div>
