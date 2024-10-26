@@ -1,72 +1,128 @@
-import React, { useState, useEffect } from "react";
-import { CheckCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect } from "react";
 
-const OrderConfirmationModal = ({ isOpen, onClose }) => {
-  const [progress, setProgress] = useState(0);
-
+const OrderConfirmationModal = ({ isOpen, onClose, orderDetails }) => {
   useEffect(() => {
     if (isOpen) {
-      const timer = setInterval(() => {
-        setProgress((oldProgress) => {
-          const newProgress = oldProgress + 2;
-          if (newProgress === 100) {
-            clearInterval(timer);
-            setTimeout(onClose, 500); // Close the modal after the progress bar is full
-          }
-          return newProgress;
-        });
-      }, 100);
+      const timer = setTimeout(() => {
+        onClose();
+      }, 100000);
 
-      return () => {
-        clearInterval(timer);
-      };
+      return () => clearTimeout(timer);
     }
   }, [isOpen, onClose]);
 
+  if (!isOpen) return null;
+
+  // Extract order from orderDetails
+  const order = orderDetails.order;
+
+  if (!order) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Processing Order...
+            </h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const formatPrice = (price) => {
+    return (price / 100).toLocaleString("en-IN", {
+      style: "currency",
+      currency: "INR",
+    });
+  };
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4"
-          >
-            <div className="text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 10 }}
-              >
-                <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
-              </motion.div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Order Confirmed!
-              </h2>
-              <p className="text-lg text-gray-600 mb-6">
-                Thank you for your purchase. Your order has been successfully
-                placed.
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/30">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <div className="text-center">
+          <div className="text-4xl text-green-500 mb-4">✓</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Order Placed Successfully!
+          </h2>
+
+          <div className="text-left space-y-4">
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <p className="font-semibold">Order ID:</p>
+              <p className="text-gray-600">{order._id}</p>
+
+              <p className="font-semibold">Order Date:</p>
+              <p className="text-gray-600">{formatDate(order.createdAt)}</p>
+
+              <p className="font-semibold">Order Status:</p>
+              <p className="text-gray-600">{order.orderStatus}</p>
+
+              <p className="font-semibold">Payment Method:</p>
+              <p className="text-gray-600">{order.paymentMethod}</p>
+
+              <p className="font-semibold">Payment Status:</p>
+              <p className="text-gray-600">{order.paymentStatus}</p>
+
+              <p className="font-semibold">Total Amount:</p>
+              <p className="text-gray-600">{formatPrice(order.totalAmount)}</p>
+
+              <p className="font-semibold">Shipment ID:</p>
+              <p className="text-gray-600">{order.shiprocketOrderId}</p>
+            </div>
+
+            <div className="border-t pt-4">
+              <p className="font-semibold mb-2">Shipping Address:</p>
+              <p className="text-sm text-gray-600">
+                {order.address.line1}
+                <br />
+                {order.address.line2}
+                <br />
+                {order.address.city}, {order.address.state}
+                <br />
+                {order.address.postalCode}
               </p>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                <motion.div
-                  className="bg-green-500 h-2.5 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.1 }}
-                />
+            </div>
+
+            <div className="border-t pt-4">
+              <p className="font-semibold mb-2">Order Items:</p>
+              <div className="space-y-3">
+                {order.products.map((product) => (
+                  <div key={product._id} className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
+                      <img
+                        src={`https://ipfs.io/ipfs/${product.image}`}
+                        alt={product.name}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-medium">{product.name}</p>
+                      <p className="text-sm text-gray-600">
+                        ₹{product.price} x {product.quantity}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </div>
+
+          <p className="mt-6 text-sm text-gray-500">
+            Redirecting to home page in 10 seconds...
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 
